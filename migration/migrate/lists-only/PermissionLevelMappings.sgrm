@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<RoleMappings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Mappings>
+    <Mapping SourceRoleType="Administrator" SourceRoleName="Volledig beheer" DestinationRoleType="Reader" DestinationRoleName="Lezen" />
+    <Mapping SourceRoleType="WebDesigner" SourceRoleName="Ontwerpen" DestinationRoleType="Reader" DestinationRoleName="Lezen" />
+    <Mapping SourceRoleType="None" SourceRoleName="Hiërarchie beheren" DestinationRoleType="Reader" DestinationRoleName="Lezen" />
+    <Mapping SourceRoleType="None" SourceRoleName="Goedkeuren" DestinationRoleType="Reader" DestinationRoleName="Lezen" />
+    <Mapping SourceRoleType="Contributor" SourceRoleName="Bijdragen" DestinationRoleType="Reader" DestinationRoleName="Lezen" />
+    <Mapping SourceRoleType="Reader" SourceRoleName="Lezen" DestinationRoleType="Reader" DestinationRoleName="Lezen" />
+    <Mapping SourceRoleType="None" SourceRoleName="Beperkt lezen" DestinationRoleType="Reader" DestinationRoleName="Lezen" />
+    <Mapping SourceRoleType="None" SourceRoleName="Alleen weergeven" DestinationRoleType="Reader" DestinationRoleName="Lezen" />
+    <Mapping SourceRoleType="None" SourceRoleName="Bijdragen_Niet_verwijderen" DestinationRoleType="Reader" DestinationRoleName="Lezen" />
+    <Mapping SourceRoleType="None" SourceRoleName="Gebruikers van de webservice van het recordcentrum" DestinationRoleType="Reader" DestinationRoleName="Lezen" />
+    <Mapping SourceRoleType="None" SourceRoleName="Ingezonden records voor het recordcentrum voltooien" DestinationRoleType="Reader" DestinationRoleName="Lezen" />
+    <Mapping SourceRoleType="None" SourceRoleName="Lezen zonder versies" DestinationRoleType="Reader" DestinationRoleName="Lezen" />
+    <Mapping SourceRoleType="None" SourceRoleName="LezenWebservices" DestinationRoleType="Reader" DestinationRoleName="Lezen" />
+  </Mappings>
+</RoleMappings>

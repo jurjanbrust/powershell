@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<UserAndGroupMappings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Unresolved AccountName="insert account here" DisplayName="Jurjan Brust" PrincipalType="User" />
+  <Mappings />
+</UserAndGroupMappings>
