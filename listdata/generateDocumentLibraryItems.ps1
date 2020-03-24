@@ -73,17 +73,18 @@ for($index = 1; $index -lt $itemsToCreate+1; $index++) {
             $spprops[$_.InternalName] = [System.DateTime]::Now.AddDays($days)
         }
         if($_.TypeAsString -eq "TaxonomyFieldType") {
-            $terms = Get-PnPTerm -TermSet $_.TermSetId -TermGroup $_.Group
+            $terms = Get-PnPTerm -TermSet $_.TermSetId -TermGroup $_.Group -IncludeChildTerms
             $randomTerm =  $terms | Get-Random -Count 1
             $taxFields[$_.InternalName] = $randomTerm.Id
         }
         if($_.TypeAsString -eq "TaxonomyFieldTypeMulti" -and $_.InternalName -ne "TaxKeyword") {
-            $terms = Get-PnPTerm -TermSet $_.TermSetId -TermGroup $_.Group -ErrorAction Continue
+            $terms = Get-PnPTerm -TermSet $_.TermSetId -TermGroup $_.Group -IncludeChildTerms -ErrorAction Continue
             $randomTerm =  $terms | Get-Random -Count 1
             if($randomTerm -ne $null) {
                 $taxFields[$_.InternalName] = $randomTerm.Id
             }
         }
+                
         if($($spprops[$_.InternalName]) -ne $null) {
             Write-Host "$($_.InternalName):" -NoNewline -ForegroundColor Red
             Write-Host "$($spprops[$_.InternalName])" -ForegroundColor Yellow
