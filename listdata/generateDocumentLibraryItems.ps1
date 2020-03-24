@@ -13,8 +13,21 @@ $listName = "name of the list"
 $contentTypeName = "name of the contenttype"
 $debug = $false
 
+function GetAllTermsRecursive($terms)
+{
+    $termIdList = @()
+    ForEach($item in $terms)
+    {
+        if($item.TermsCount -gt 0) {
+            GetAllTermsRecursive $item.Terms
+        } else {
+            $termIdList += $item.Id
+            if($debug) { Write-Host "$($item.Id)-$($item.Name)" }
+        }
+    }
+    return $termIdList
+}
 
-# Start of Script
 Connect-PnPOnline $url -Credentials $credentials -UseAdfs -NoTelemetry -ErrorAction Stop
 
 $list = Get-PnPList -Identity $listName
@@ -48,7 +61,7 @@ for($index = 1; $index -lt $itemsToCreate+1; $index++) {
     $randomText = $words | Get-Random -count 1
     $randomNr = Get-Random -Minimum 10000 -Maximum 99999
     $titleText = "$randomNr-$randomText"
-    $fileName = "$($titleText).doc"
+    $fileName = "$($titleText).$($fileExtension)"
 
     $spprops = @{}
     $taxFields = @{}
@@ -56,7 +69,7 @@ for($index = 1; $index -lt $itemsToCreate+1; $index++) {
     $contenttype.Fields | Where-Object { -Not $_.InternalName.StartsWith("_") } | ForEach-Object {
         if($_.InternalName -eq "Title") {
             
-            $spprops[$_.InternalName] = $titleText  
+            $spprops[$_.InternalName] = $titleText
         }
         if($_.InternalName -ne "Title" -and $_.TypeAsString -eq "Text" -or ($_.TypeAsString -eq "Note" -and $_.Hidden -eq $false)) {
             # hidden - false -> make sure we do not set hidden taxfields
@@ -73,26 +86,29 @@ for($index = 1; $index -lt $itemsToCreate+1; $index++) {
             $spprops[$_.InternalName] = [System.DateTime]::Now.AddDays($days)
         }
         if($_.TypeAsString -eq "TaxonomyFieldType") {
-            $terms = Get-PnPTerm -TermSet $_.TermSetId -TermGroup $_.Group -IncludeChildTerms
-            $randomTerm =  $terms | Get-Random -Count 1
-            $taxFields[$_.InternalName] = $randomTerm.Id
+            $terms = Get-PnPTerm -TermSet $_.TermSetId -TermGroup $_.Group -IncludeChildTerms -Recursive 
+            $results = GetAllTermsRecursive $terms
+            $randomTerm =  $results | Get-Random -Count 1
+            $taxFields[$_.InternalName] = $randomTerm
         }
         if($_.TypeAsString -eq "TaxonomyFieldTypeMulti" -and $_.InternalName -ne "TaxKeyword") {
-            $terms = Get-PnPTerm -TermSet $_.TermSetId -TermGroup $_.Group -IncludeChildTerms -ErrorAction Continue
-            $randomTerm =  $terms | Get-Random -Count 1
+            $terms = Get-PnPTerm -TermSet $_.TermSetId -TermGroup $_.Group -IncludeChildTerms -Recursive -ErrorAction Continue
+            $results = GetAllTermsRecursive $terms
+            $randomTerm =  $results | Get-Random -Count 1
             if($randomTerm -ne $null) {
-                $taxFields[$_.InternalName] = $randomTerm.Id
+                $taxFields[$_.InternalName] = $randomTerm
             }
         }
-                
+
         if($($spprops[$_.InternalName]) -ne $null) {
             Write-Host "$($_.InternalName):" -NoNewline -ForegroundColor Red
             Write-Host "$($spprops[$_.InternalName])" -ForegroundColor Yellow
         }
     }
-    $file = Add-PnPFile -Path testfile1.txt -Folder $list.EntityTypeName -NewFileName $fileName -Values $spprops 
+    $file = Add-PnPFile -Path $filePath -Folder $list.EntityTypeName -NewFileName $fileName -Values $spprops 
     if($null -ne $file) {
         Write-Host "Added List item: $($file.ListItemAllFields.Id) - $($file.Title)" -ForegroundColor Green
+
         # I was unable to set the taxonomy fields directly, so I do it here by using Set-PnpTaxonomyFieldValue
         foreach ($h in $taxFields.GetEnumerator()) {
             Write-Host "Setting Taxfield: "  -ForegroundColor Green -NoNewline
